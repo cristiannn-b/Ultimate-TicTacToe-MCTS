@@ -4,7 +4,7 @@ from p2_t3 import Board
 from random import choice
 from math import sqrt, log
 
-num_nodes = 100
+num_nodes = 1000
 explore_faction = 2.
 
 def traverse_nodes(node: MCTSNode, board: Board, state, bot_identity: int):
@@ -29,12 +29,13 @@ def traverse_nodes(node: MCTSNode, board: Board, state, bot_identity: int):
     
     # Check if the current node is a leaf node
     # print(len(node.child_nodes))
-    if(len(node.untried_actions) != 0):
+    if(len(node.untried_actions) != len(node.child_nodes)):
         return node, state
     
     # Find the child with the highest UCT score
     # print("Got past end conds (Traversal)")
     max_node = None
+    max_state = None
     max_score = 0
     for action, child in node.child_nodes.items():
         # Calculate child UCT score
@@ -47,9 +48,12 @@ def traverse_nodes(node: MCTSNode, board: Board, state, bot_identity: int):
             max_node = child
             max_state = board.next_state(state, action)
             max_score = UCT_score
+
+    # if(max_score == 0):
+    #     board.display(state, node.parent_action)
+    #     return node, state
     
     # Take the node and action and recursively continue
-    # print(max_score)
     return traverse_nodes(max_node, board, max_state, board.current_player(max_state))
 
 def expand_leaf(node: MCTSNode, board: Board, state):
@@ -79,7 +83,7 @@ def expand_leaf(node: MCTSNode, board: Board, state):
 
     # Update the parent's info
     node.child_nodes[action_taken] = child
-    node.untried_actions.remove(action_taken)
+    # node.untried_actions.remove(action_taken)
 
     return child, child_state
 
@@ -141,10 +145,7 @@ def ucb(node: MCTSNode, is_opponent: bool):
         exploit = 1 - exploit
 
     # Calculate the inside of the root
-    if(node.parent.visits == 0):
-        explore = 0
-    else:
-        explore = log(node.parent.visits) / node.visits
+    explore = log(node.parent.visits) / node.visits
 
     # Combine the exploitation and exploration calculations
     ucb = exploit + (explore_faction * sqrt(explore))
@@ -165,8 +166,8 @@ def get_best_action(root_node: MCTSNode):
     best_score = 0
 
     for action, child in root_node.child_nodes.items():
-        if(child.wins > best_score):
-            best_score = child.wins
+        if(child.visits > best_score):
+            best_score = child.visits
             best_action = action
 
     return best_action
@@ -200,7 +201,7 @@ def think(board: Board, current_state):
         # print("Expanding a leaf...")
         node, state = expand_leaf(node, board, state)
         # print("Rollout + Backpropagation...")
-        backpropagate(node, is_win(board, rollout(board, state), board.current_player(state)))
+        backpropagate(node, is_win(board, rollout(board, state), bot_identity))
 
         # print("Do it all again...")
 
@@ -208,5 +209,5 @@ def think(board: Board, current_state):
     # estimated win rate.
     best_action = get_best_action(root_node)
     
-    print(f"Action chosen: {best_action}")
+    # print(f"Action chosen: {best_action}")
     return best_action
