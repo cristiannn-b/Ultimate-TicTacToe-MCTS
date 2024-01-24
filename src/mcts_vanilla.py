@@ -28,30 +28,22 @@ def traverse_nodes(node: MCTSNode, board: Board, state, bot_identity: int):
         return node, state
     
     # Check if the current node is a leaf node
-    # print(len(node.child_nodes))
     if(len(node.untried_actions) != len(node.child_nodes)):
         return node, state
     
     # Find the child with the highest UCT score
-    # print("Got past end conds (Traversal)")
     max_node = None
     max_state = None
     max_score = 0
     for action, child in node.child_nodes.items():
         # Calculate child UCT score
-        # Do you use current's state or child's state?
         UCT_score = ucb(child, board.current_player(state) != bot_identity)
-        # print(UCT_score)
 
         # Set the child if it has a higher UCT score
         if UCT_score > max_score:
             max_node = child
             max_state = board.next_state(state, action)
             max_score = UCT_score
-
-    # if(max_score == 0):
-    #     board.display(state, node.parent_action)
-    #     return node, state
     
     # Take the node and action and recursively continue
     return traverse_nodes(max_node, board, max_state, board.current_player(max_state))
@@ -73,8 +65,7 @@ def expand_leaf(node: MCTSNode, board: Board, state):
     if(board.is_ended(state)):
         return node, state
     
-    # Define the action that is to be taken from parent -> child (randomly?)
-    # Use the list of legal actions or the list of untried actions???
+    # Define the action that is to be taken from parent -> child
     action_taken = choice(node.untried_actions)
 
     # Make the new child node
@@ -83,7 +74,6 @@ def expand_leaf(node: MCTSNode, board: Board, state):
 
     # Update the parent's info
     node.child_nodes[action_taken] = child
-    # node.untried_actions.remove(action_taken)
 
     return child, child_state
 
@@ -196,18 +186,13 @@ def think(board: Board, current_state):
         node = root_node
 
         # Do MCTS - This is all you!
-        # print("Traversing the tree...")
         node, state = traverse_nodes(node, board, state, board.current_player(state))
-        # print("Expanding a leaf...")
         node, state = expand_leaf(node, board, state)
-        # print("Rollout + Backpropagation...")
         backpropagate(node, is_win(board, rollout(board, state), bot_identity))
-
-        # print("Do it all again...")
 
     # Return an action, typically the most frequently used action (from the root) or the action with the best
     # estimated win rate.
     best_action = get_best_action(root_node)
     
-    # print(f"Action chosen: {best_action}")
+    print(f"Action chosen: {best_action}")
     return best_action
