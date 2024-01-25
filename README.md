@@ -8,15 +8,15 @@ This project revolves around a collection of bots with the ability to play Ultim
 
 ## Who Did What?
 #### Cristian Barragan (cbarrag2)
-~~~
-- Implemented the intitial MCTS bot, mcts_vanilla.py, and its functions and algorithms
+```
+- Implemented the intitial MCTS bot, mcts_vanilla.py, and its functions/algorithms
 - Ran Experiment 1 (and some of 2, for the sake of time)
 - Did Experiment 1 write-up
-~~~
+```
 
 #### Chloe Liang (cliang53)
-~~~
+```
 - Designed and implemented a series of heuristic tests used in the rollout portion of the mcts_modified.py bot
 - Ran most of Experiment 2
 - Did Experiment 2 write-up
-~~~
+```
