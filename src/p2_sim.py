@@ -36,6 +36,7 @@ rounds = 100
 wins = {'draw':0, 1:0, 2:0}
 
 start = time()  # To log how much time the simulation takes.
+
 for i in range(rounds):
 
     print("")
