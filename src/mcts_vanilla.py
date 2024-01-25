@@ -4,7 +4,7 @@ from p2_t3 import Board
 from random import choice
 from math import sqrt, log
 
-num_nodes = 1000
+num_nodes = 99
 explore_faction = 2.
 
 def traverse_nodes(node: MCTSNode, board: Board, state, bot_identity: int):
@@ -44,6 +44,10 @@ def traverse_nodes(node: MCTSNode, board: Board, state, bot_identity: int):
             max_node = child
             max_state = board.next_state(state, action)
             max_score = UCT_score
+    
+    # If the game ends at the child, current_player breaks
+    if(max_state is None):
+        return node, state
     
     # Take the node and action and recursively continue
     return traverse_nodes(max_node, board, max_state, board.current_player(max_state))
@@ -194,5 +198,5 @@ def think(board: Board, current_state):
     # estimated win rate.
     best_action = get_best_action(root_node)
     
-    print(f"Action chosen: {best_action}")
+    # print(f"Action chosen: {best_action}")
     return best_action
